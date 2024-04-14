@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(NutrifiApp());
+}
+
+class NutrifiApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Nutrifi',
+      theme: ThemeData(
+        primaryColor: Colors.white,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: LoginScreen(),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'NUTRIFI',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: Colors.orangeAccent, // Custom color based on your brand
+              ),
+            ),
+            SizedBox(height: 100), // Provides spacing between logo and buttons
+            Image.asset('assets/nutrifi_logo.png'), // Path to your image asset
+            SizedBox(height: 100), // Provides spacing between image and buttons
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity, // Full width button
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.redAccent, // Button color
+                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        textStyle: TextStyle(fontSize: 18),
+                      ),
+                      onPressed: () {
+                        // Logic to initiate Log In
+                      },
+                      child: Text('Log In'),
+                    ),
+                  ),
+                  SizedBox(height: 20), // Spacing between buttons
+                  SizedBox(
+                    width: double.infinity, // Full width button
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.orange, // Button color
+                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        textStyle: TextStyle(fontSize: 18),
+                      ),
+                      onPressed: () {
+                        // Logic to initiate Sign Up
+                      },
+                      child: Text('Sign Up'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
