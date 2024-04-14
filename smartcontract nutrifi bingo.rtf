@@ -1,0 +1,88 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 use near_sdk::borsh::\{self, BorshDeserialize, BorshSerialize\};\
+use near_sdk::\{near_bindgen, AccountId, Balance, PanicOnDefault, env\};\
+use near_sdk::collections::Vector;\
+use std::collections::HashSet;\
+\
+near_sdk::setup_alloc!();\
+\
+// Estructura para representar un cart\'f3n de Bingo\
+#[derive(BorshDeserialize, BorshSerialize)]\
+pub struct BingoCard \{\
+    numbers: HashSet<u8>,\
+    is_complete: bool,\
+\}\
+\
+// Estructura para representar el estado del juego\
+#[near_bindgen]\
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]\
+pub struct BingoGame \{\
+    owner: AccountId,\
+    players: Vector<AccountId>,\
+    cards: Vector<BingoCard>,\
+    prize_pool: Balance,\
+\}\
+\
+#[near_bindgen]\
+impl BingoGame \{\
+    // Inicializa el contrato con el propietario y el fondo del premio\
+    #[init]\
+    pub fn new(owner: AccountId, initial_prize: Balance) -> Self \{\
+        assert!(!env::state_exists(), "Already initialized");\
+        Self \{\
+            owner,\
+            players: Vector::new(),\
+            cards: Vector::new(),\
+            prize_pool: initial_prize,\
+        \}\
+    \}\
+\
+    // Permite a los jugadores unirse al juego\
+    pub fn join_game(&mut self, account: AccountId) \{\
+        self.players.push(&account);\
+        // Crear y a\'f1adir un nuevo cart\'f3n de bingo para el jugador\
+        let card = BingoCard \{\
+            numbers: HashSet::new(), // Deber\'edas llenar esto con n\'fameros aleatorios\
+            is_complete: false,\
+        \};\
+        self.cards.push(&card);\
+    \}\
+\
+    // Registrar n\'fameros llamados por los jugadores\
+    pub fn mark_number(&mut self, player_id: usize, number: u8) \{\
+        let mut card = self.cards.get(player_id).expect("Player does not exist");\
+        if card.numbers.contains(&number) \{\
+            card.numbers.remove(&number);\
+            if card.numbers.is_empty() \{\
+                card.is_complete = true;\
+                self.cards.replace(player_id, &card);\
+                // El jugador gana parte del fondo del premio\
+                let prize = self.prize_pool / 10; // Ejemplo de c\'e1lculo de premio\
+                self.prize_pool -= prize;\
+                // Env\'eda el premio al jugador (esto requiere una llamada de funci\'f3n)\
+                env::log(format!("Player \{\} has won \{\}!", player_id, prize).as_bytes());\
+            \}\
+        \}\
+    \}\
+\
+    // Agrega fondos al fondo del premio\
+    pub fn add_to_prize_pool(&mut self, amount: Balance) \{\
+        self.prize_pool += amount;\
+    \}\
+\
+    // M\'e9todos adicionales para manejar el juego, como comenzar un nuevo juego,\
+    // comprobar si hay ganadores, retirar fondos (solo el propietario), etc.\
+\}\
+\
+// \
+#[cfg(test)]\
+mod tests \{\
+    // Importaciones y pruebas aqu\'ed...\
+\}\
+}
